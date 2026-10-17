@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VSTEP Listening Test 1</title>
+<style>
+  :root{
+    --blue:#1a5276; --blue-light:#eaf2f8; --green:#1e8449; --red:#c0392b;
+    --border:#d5dbdb; --bg:#f4f6f7;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);margin:0;padding:0;color:#222;}
+  .container{max-width:860px;margin:0 auto;padding:20px 20px 60px;}
+  h1{text-align:center;color:var(--blue);margin-bottom:4px;}
+  .subtitle{text-align:center;color:#555;margin-bottom:18px;font-size:14px;}
+  .box{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .instructions p{margin:6px 0;font-size:14.5px;line-height:1.5;}
+  .player-box{background:var(--blue-light);border:1px solid #aed6f1;border-radius:8px;padding:16px 20px;margin-bottom:18px;text-align:center;}
+  #startBtn{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:12px 26px;font-size:16px;cursor:pointer;}
+  #startBtn:disabled{background:#95a5a6;cursor:not-allowed;}
+  #startBtn:hover:not(:disabled){background:#154360;}
+  .now-playing{margin:10px 0 4px;font-weight:600;color:var(--blue);}
+  .timer{font-size:20px;font-weight:700;color:var(--blue);margin:6px 0;}
+  .timer.warn{color:var(--red);}
+  .progress-track{width:100%;height:8px;background:#d6eaf8;border-radius:4px;overflow:hidden;margin:10px 0;pointer-events:none;}
+  .progress-fill{height:100%;width:0%;background:var(--blue);transition:width .3s linear;}
+  .vol-row{margin-top:8px;font-size:13px;color:#555;}
+  .vol-row input{vertical-align:middle;}
+  .lock-note{font-size:12.5px;color:#7b7b7b;margin-top:8px;}
+  .audio-warning{display:none;background:#fdebd0;border:1px solid #f5b041;color:#7e5109;padding:10px 14px;border-radius:6px;font-size:13px;margin-top:10px;}
+  .part-title{color:var(--blue);border-bottom:2px solid var(--blue-light);padding-bottom:6px;margin-top:0;}
+  .part-directions{font-size:14px;color:#444;font-style:italic;margin-bottom:14px;}
+  .student-info label{font-weight:600;}
+  .student-info input{margin-left:8px;padding:6px 10px;border:1px solid var(--border);border-radius:5px;width:260px;font-size:14px;}
+  .question{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--border);}
+  .question:last-child{border-bottom:none;}
+  .q-text{font-weight:600;margin-bottom:8px;}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
+  .opt-label{display:flex;align-items:flex-start;gap:6px;font-size:14.5px;line-height:1.4;cursor:pointer;padding:4px 8px;border-radius:5px;}
+  .opt-label input{margin-top:3px;flex-shrink:0;}
+  @media (max-width:560px){ .options{grid-template-columns:1fr;} }
+  .opt-label:hover{background:#f2f4f4;}
+  .opt-label input{cursor:pointer;}
+  .opt-label.correct{background:#d5f5e3;font-weight:600;}
+  .opt-label.incorrect{background:#fadbd8;font-weight:600;}
+  #submitBtn{display:block;width:100%;background:var(--green);color:#fff;border:none;border-radius:6px;padding:14px;font-size:17px;cursor:pointer;margin-top:10px;}
+  #submitBtn:disabled{background:#aab7b8;cursor:not-allowed;}
+  #submitBtn:hover:not(:disabled){background:#145a32;}
+  #resultBox{display:none;}
+  .score-summary{text-align:center;padding:18px;background:#fff;border:2px solid var(--blue);border-radius:8px;margin-bottom:18px;}
+  .score-summary .big{font-size:34px;font-weight:800;color:var(--blue);}
+  .gform-status{font-size:13px;margin-top:8px;color:#555;}
+  .part-score{font-size:14px;color:#333;margin-top:4px;}
+  fieldset{border:none;padding:0;margin:0;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>PHẦN 1: NGHE HIỂU – VSTEP</h1>
+  <div class="subtitle">Thời gian: 40 phút &nbsp;|&nbsp; Số câu hỏi: 35</div>
+
+  <div class="box instructions">
+    <p><b>Directions:</b> In this section of the test, you will have an opportunity to demonstrate your ability to understand conversations and talks in English. There are three parts in this section with special directions for each part. Answer all the questions on the basis of what is stated or implied by the speakers in the recording.</p>
+    <p>There will be time for you to read the instructions and you will have a chance to check your work. The recording will be played <b>ONCE only</b>.</p>
+    <p><i>Time allowance: about 40 minutes, including 05 minutes to transfer your answers to your answer sheet.</i></p>
+  </div>
+
+  <div class="player-box">
+    <button id="startBtn">▶ Bắt đầu nghe</button>
+    <div class="now-playing" id="nowPlaying">Chưa bắt đầu</div>
+    <div class="timer" id="timer">40:00</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="vol-row">🔊 Âm lượng
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+    <div class="lock-note">Lưu ý: bài nghe chỉ phát <b>một lần duy nhất</b>, chạy liên tục qua 3 phần. Không thể tua lại, tạm dừng hay tải file nghe về máy.</div>
+    <div class="audio-warning" id="audioWarning">⚠ Không tải được file âm thanh. Hãy đặt file HTML này vào cùng thư mục chứa các file T1-PART1.mp3 / T1-PART2.mp3 / T1-PART3.mp3, hoặc kiểm tra lại đường dẫn.</div>
+  </div>
+
+  <form id="testForm" oncontextmenu="return false" onsubmit="return false">
+
+    <div class="box student-info">
+      <label>Họ và tên học sinh: <input type="text" id="fullName" placeholder="Nhập họ tên..." required></label>
+    </div>
+
+    <!-- PART 1 -->
+    <div class="box" id="part1">
+      <h2 class="part-title">PART 1: Questions 1-8</h2>
+      <p class="part-directions">In this part, you will hear EIGHT short announcements or instructions. There is one question for each announcement or instruction. For each question, choose the right answer A, B, C or D.</p>
+
+      <div class="question" data-q="1">
+        <div class="q-text">Question 1: What is the purpose of the message?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q1" value="A"> A. To schedule a checkup</label>
+          <label class="opt-label"><input type="radio" name="q1" value="B"> B. To delay a meeting</label>
+          <label class="opt-label"><input type="radio" name="q1" value="C"> C. To confirm an appointment</label>
+          <label class="opt-label"><input type="radio" name="q1" value="D"> D. To request some files</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="2">
+        <div class="q-text">Question 2: What is being advertised?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q2" value="A"> A. A city tour</label>
+          <label class="opt-label"><input type="radio" name="q2" value="B"> B. A spa package</label>
+          <label class="opt-label"><input type="radio" name="q2" value="C"> C. A hotel</label>
+          <label class="opt-label"><input type="radio" name="q2" value="D"> D. A hospital</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="3">
+        <div class="q-text">Question 3: According to the announcement, what will be built near Berryville?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q3" value="A"> A. A university</label>
+          <label class="opt-label"><input type="radio" name="q3" value="B"> B. A high school</label>
+          <label class="opt-label"><input type="radio" name="q3" value="C"> C. A new hospital wing</label>
+          <label class="opt-label"><input type="radio" name="q3" value="D"> D. An airport terminal</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="4">
+        <div class="q-text">Question 4: Who is this announcement probably for?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q4" value="A"> A. Factory employees</label>
+          <label class="opt-label"><input type="radio" name="q4" value="B"> B. Office managers</label>
+          <label class="opt-label"><input type="radio" name="q4" value="C"> C. Safety supervisors</label>
+          <label class="opt-label"><input type="radio" name="q4" value="D"> D. Hotel workers</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="5">
+        <div class="q-text">Question 5: What is the purpose of the message?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q5" value="A"> A. To make a reservation at a restaurant</label>
+          <label class="opt-label"><input type="radio" name="q5" value="B"> B. To ask about a new employee</label>
+          <label class="opt-label"><input type="radio" name="q5" value="C"> C. To invite a co-worker for dinner</label>
+          <label class="opt-label"><input type="radio" name="q5" value="D"> D. To offer a ride home</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="6">
+        <div class="q-text">Question 6: What is this message about?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q6" value="A"> A. A new security policy</label>
+          <label class="opt-label"><input type="radio" name="q6" value="B"> B. The business hours</label>
+          <label class="opt-label"><input type="radio" name="q6" value="C"> C. An office relocation</label>
+          <label class="opt-label"><input type="radio" name="q6" value="D"> D. A permanent closure</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="7">
+        <div class="q-text">Question 7: What is the purpose of the message?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q7" value="A"> A. To make an appointment</label>
+          <label class="opt-label"><input type="radio" name="q7" value="B"> B. To offer a position</label>
+          <label class="opt-label"><input type="radio" name="q7" value="C"> C. To cancel an interview</label>
+          <label class="opt-label"><input type="radio" name="q7" value="D"> D. To confirm receipt of application</label>
+        </div>
+      </div>
+
+      <div class="question" data-q="8">
+        <div class="q-text">Question 8: Who is the speaker?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q8" value="A"> A. A new employee</label>
+          <label class="opt-label"><input type="radio" name="q8" value="B"> B. The founder</label>
+          <label class="opt-label"><input type="radio" name="q8" value="C"> C. The chairman of the board</label>
+          <label class="opt-label"><input type="radio" name="q8" value="D"> D. The personnel director</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 2 -->
+    <div class="box" id="part2">
+      <h2 class="part-title">PART 2: Questions 9-20</h2>
+      <p class="part-directions">In this part, you will hear THREE conversations. The conversations will not be repeated. There are four questions for each conversation. For each question, choose the correct answer A, B, C or D.</p>
+
+      <p><b>Questions 9 to 12 refer to the following conversation.</b></p>
+      <div class="question" data-q="9">
+        <div class="q-text">Question 9: Why is the woman calling?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q9" value="A"> A. To make an appointment</label>
+          <label class="opt-label"><input type="radio" name="q9" value="B"> B. To speak with Dr Johnson</label>
+          <label class="opt-label"><input type="radio" name="q9" value="C"> C. To confirm an appointment</label>
+          <label class="opt-label"><input type="radio" name="q9" value="D"> D. To receive some medical advice</label>
+        </div>
+      </div>
+      <div class="question" data-q="10">
+        <div class="q-text">Question 10: What is probably true about the man?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q10" value="A"> A. He is a doctor.</label>
+          <label class="opt-label"><input type="radio" name="q10" value="B"> B. He is very busy these days.</label>
+          <label class="opt-label"><input type="radio" name="q10" value="C"> C. He is the woman's friend.</label>
+          <label class="opt-label"><input type="radio" name="q10" value="D"> D. He will be late for the appointment.</label>
+        </div>
+      </div>
+      <div class="question" data-q="11">
+        <div class="q-text">Question 11: What does the woman ask the man to do?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q11" value="A"> A. Show up to his appointment a little early</label>
+          <label class="opt-label"><input type="radio" name="q11" value="B"> B. Get more medical insurance</label>
+          <label class="opt-label"><input type="radio" name="q11" value="C"> C. Wait 10 minutes in the waiting area</label>
+          <label class="opt-label"><input type="radio" name="q11" value="D"> D. Always arrange his appointments a day early</label>
+        </div>
+      </div>
+      <div class="question" data-q="12">
+        <div class="q-text">Question 12: What will the man likely take to his appointment?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q12" value="A"> A. His past medical records</label>
+          <label class="opt-label"><input type="radio" name="q12" value="B"> B. Some insurance documents</label>
+          <label class="opt-label"><input type="radio" name="q12" value="C"> C. His appointment book</label>
+          <label class="opt-label"><input type="radio" name="q12" value="D"> D. An application form</label>
+        </div>
+      </div>
+
+      <p><b>Questions 13 to 16 refer to the following conversation.</b></p>
+      <div class="question" data-q="13">
+        <div class="q-text">Question 13: Who most likely are they?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q13" value="A"> A. Journalists</label>
+          <label class="opt-label"><input type="radio" name="q13" value="B"> B. Physicians</label>
+          <label class="opt-label"><input type="radio" name="q13" value="C"> C. Lawyers</label>
+          <label class="opt-label"><input type="radio" name="q13" value="D"> D. Restaurant owners</label>
+        </div>
+      </div>
+      <div class="question" data-q="14">
+        <div class="q-text">Question 14: Who has been mentioning the study to the woman?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q14" value="A"> A. Her patients</label>
+          <label class="opt-label"><input type="radio" name="q14" value="B"> B. Her mother-in-law</label>
+          <label class="opt-label"><input type="radio" name="q14" value="C"> C. Her doctor</label>
+          <label class="opt-label"><input type="radio" name="q14" value="D"> D. Her friends</label>
+        </div>
+      </div>
+      <div class="question" data-q="15">
+        <div class="q-text">Question 15: When will they likely attend the conference?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q15" value="A"> A. Today</label>
+          <label class="opt-label"><input type="radio" name="q15" value="B"> B. Friday</label>
+          <label class="opt-label"><input type="radio" name="q15" value="C"> C. Saturday</label>
+          <label class="opt-label"><input type="radio" name="q15" value="D"> D. Sunday</label>
+        </div>
+      </div>
+      <div class="question" data-q="16">
+        <div class="q-text">Question 16: Who is going to visit the woman?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q16" value="A"> A. Her friends</label>
+          <label class="opt-label"><input type="radio" name="q16" value="B"> B. Her husband</label>
+          <label class="opt-label"><input type="radio" name="q16" value="C"> C. Her mother-in-law</label>
+          <label class="opt-label"><input type="radio" name="q16" value="D"> D. Her patients</label>
+        </div>
+      </div>
+
+      <p><b>Questions 17 to 20 refer to the following conversation.</b></p>
+      <div class="question" data-q="17">
+        <div class="q-text">Question 17: What are they talking about?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q17" value="A"> A. A newly released product</label>
+          <label class="opt-label"><input type="radio" name="q17" value="B"> B. The duration of the warranty</label>
+          <label class="opt-label"><input type="radio" name="q17" value="C"> C. A customer they helped</label>
+          <label class="opt-label"><input type="radio" name="q17" value="D"> D. A vehicle the man recently fixed</label>
+        </div>
+      </div>
+      <div class="question" data-q="18">
+        <div class="q-text">Question 18: According to the man, what was the customer most satisfied with?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q18" value="A"> A. The low cost of the repair work</label>
+          <label class="opt-label"><input type="radio" name="q18" value="B"> B. The free service they provided</label>
+          <label class="opt-label"><input type="radio" name="q18" value="C"> C. The competitive price of their products</label>
+          <label class="opt-label"><input type="radio" name="q18" value="D"> D. The length of the warranty period</label>
+        </div>
+      </div>
+      <div class="question" data-q="19">
+        <div class="q-text">Question 19: What do the speakers feel makes customers happy?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q19" value="A"> A. The low price</label>
+          <label class="opt-label"><input type="radio" name="q19" value="B"> B. The great service</label>
+          <label class="opt-label"><input type="radio" name="q19" value="C"> C. The free gifts</label>
+          <label class="opt-label"><input type="radio" name="q19" value="D"> D. The store hours</label>
+        </div>
+      </div>
+      <div class="question" data-q="20">
+        <div class="q-text">Question 20: What is true about the customer?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q20" value="A"> A. He is a loyal one.</label>
+          <label class="opt-label"><input type="radio" name="q20" value="B"> B. He thought the warranty had expired.</label>
+          <label class="opt-label"><input type="radio" name="q20" value="C"> C. He will definitely come back to the store.</label>
+          <label class="opt-label"><input type="radio" name="q20" value="D"> D. He will recommend the store to his friend.</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 3 -->
+    <div class="box" id="part3">
+      <h2 class="part-title">PART 3: Questions 21-35</h2>
+      <p class="part-directions">In this part, you will hear THREE talks, lectures or conversations. The talks, lectures, or conversations will not be repeated. There are five questions for each talk, lecture, or conversation.</p>
+
+      <p><b>Questions 21 to 25 refer to the following conversation.</b></p>
+      <div class="question" data-q="21">
+        <div class="q-text">Question 21: Why is the woman visiting this office?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q21" value="A"> A. She wants to be a science major.</label>
+          <label class="opt-label"><input type="radio" name="q21" value="B"> B. She wants to learn about politics.</label>
+          <label class="opt-label"><input type="radio" name="q21" value="C"> C. She is interested in registering for a course.</label>
+          <label class="opt-label"><input type="radio" name="q21" value="D"> D. She is interested in Political Science.</label>
+        </div>
+      </div>
+      <div class="question" data-q="22">
+        <div class="q-text">Question 22: Why are there few people in the honors program?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q22" value="A"> A. It is not considered a prestigious program.</label>
+          <label class="opt-label"><input type="radio" name="q22" value="B"> B. The requirements are difficult to meet.</label>
+          <label class="opt-label"><input type="radio" name="q22" value="C"> C. No one likes the economics requirement.</label>
+          <label class="opt-label"><input type="radio" name="q22" value="D"> D. It is an unpopular program.</label>
+        </div>
+      </div>
+      <div class="question" data-q="23">
+        <div class="q-text">Question 23: What subject is NOT included, if the woman chooses Political Science?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q23" value="A"> A. Political Science 1</label>
+          <label class="opt-label"><input type="radio" name="q23" value="B"> B. Political Science 2</label>
+          <label class="opt-label"><input type="radio" name="q23" value="C"> C. Writing seminar</label>
+          <label class="opt-label"><input type="radio" name="q23" value="D"> D. Economics</label>
+        </div>
+      </div>
+      <div class="question" data-q="24">
+        <div class="q-text">Question 24: Which is one of the requirements, if the woman chooses International Relation program?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q24" value="A"> A. Students have to maintain over a "B" average in all required courses.</label>
+          <label class="opt-label"><input type="radio" name="q24" value="B"> B. Students have to study economics and a second history credit.</label>
+          <label class="opt-label"><input type="radio" name="q24" value="C"> C. Students need to be realistic in their expectation.</label>
+          <label class="opt-label"><input type="radio" name="q24" value="D"> D. A, B, and C are all correct.</label>
+        </div>
+      </div>
+      <div class="question" data-q="25">
+        <div class="q-text">Question 25: What is NOT a reason for the Political Science Department's elaborate registration process?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q25" value="A"> A. To make students think carefully about what courses they will take</label>
+          <label class="opt-label"><input type="radio" name="q25" value="B"> B. To have a similar system with other majors</label>
+          <label class="opt-label"><input type="radio" name="q25" value="C"> C. To make students have a planned program</label>
+          <label class="opt-label"><input type="radio" name="q25" value="D"> D. To ensure students have realistic expectations</label>
+        </div>
+      </div>
+
+      <p><b>Questions 26 to 30 refer to the following lecture.</b></p>
+      <div class="question" data-q="26">
+        <div class="q-text">Question 26: What happened to the debate club meeting?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q26" value="A"> A. They painted instead of debating.</label>
+          <label class="opt-label"><input type="radio" name="q26" value="B"> B. The club was disbanded.</label>
+          <label class="opt-label"><input type="radio" name="q26" value="C"> C. The meeting was moved to another room.</label>
+          <label class="opt-label"><input type="radio" name="q26" value="D"> D. The meeting was postponed.</label>
+        </div>
+      </div>
+      <div class="question" data-q="27">
+        <div class="q-text">Question 27: Why couldn't the man receive the email?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q27" value="A"> A. He was too busy with his classes.</label>
+          <label class="opt-label"><input type="radio" name="q27" value="B"> B. He was in a meeting.</label>
+          <label class="opt-label"><input type="radio" name="q27" value="C"> C. His computer has been out of order.</label>
+          <label class="opt-label"><input type="radio" name="q27" value="D"> D. His friend forgot to tell him.</label>
+        </div>
+      </div>
+      <div class="question" data-q="28">
+        <div class="q-text">Question 28: What is going to happen with the debate club's meeting room?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q28" value="A"> A. It is going to be demolished.</label>
+          <label class="opt-label"><input type="radio" name="q28" value="B"> B. It is going to be sold.</label>
+          <label class="opt-label"><input type="radio" name="q28" value="C"> C. It is going to be repainted.</label>
+          <label class="opt-label"><input type="radio" name="q28" value="D"> D. It is going to be closed.</label>
+        </div>
+      </div>
+      <div class="question" data-q="29">
+        <div class="q-text">Question 29: What is true about the debate club's meeting room?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q29" value="A"> A. It is too small for the group.</label>
+          <label class="opt-label"><input type="radio" name="q29" value="B"> B. It is called "Turner Auditorium".</label>
+          <label class="opt-label"><input type="radio" name="q29" value="C"> C. It will soon be enlarged to accommodate everyone.</label>
+          <label class="opt-label"><input type="radio" name="q29" value="D"> D. It is the most run-down room in the student building.</label>
+        </div>
+      </div>
+      <div class="question" data-q="30">
+        <div class="q-text">Question 30: What can be inferred about the man?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q30" value="A"> A. He does not enjoy the debate club.</label>
+          <label class="opt-label"><input type="radio" name="q30" value="B"> B. He is not taking many classes.</label>
+          <label class="opt-label"><input type="radio" name="q30" value="C"> C. He is a weak debater.</label>
+          <label class="opt-label"><input type="radio" name="q30" value="D"> D. He is not ready for his debate yet.</label>
+        </div>
+      </div>
+
+      <p><b>Questions 31 to 35 refer to the following professor's talk.</b></p>
+      <div class="question" data-q="31">
+        <div class="q-text">Question 31: What is the professor mainly talking about?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q31" value="A"> A. The science of space travel</label>
+          <label class="opt-label"><input type="radio" name="q31" value="B"> B. Scientific problems in Star Wars</label>
+          <label class="opt-label"><input type="radio" name="q31" value="C"> C. The erroneous science in science fiction</label>
+          <label class="opt-label"><input type="radio" name="q31" value="D"> D. Why science fiction is bad literature</label>
+        </div>
+      </div>
+      <div class="question" data-q="32">
+        <div class="q-text">Question 32: According to the lecture, what is wrong with space travel in most science fiction?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q32" value="A"> A. There are no aliens in outer space.</label>
+          <label class="opt-label"><input type="radio" name="q32" value="B"> B. There is no way to go faster than light speed.</label>
+          <label class="opt-label"><input type="radio" name="q32" value="C"> C. There are many other stars and galaxies.</label>
+          <label class="opt-label"><input type="radio" name="q32" value="D"> D. There is nowhere to go in outer space.</label>
+        </div>
+      </div>
+      <div class="question" data-q="33">
+        <div class="q-text">Question 33: According to the professor, how long does it take to travel to the closest star to Earth?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q33" value="A"> A. Three light years</label>
+          <label class="opt-label"><input type="radio" name="q33" value="B"> B. One hundred light years</label>
+          <label class="opt-label"><input type="radio" name="q33" value="C"> C. Hundreds light years</label>
+          <label class="opt-label"><input type="radio" name="q33" value="D"> D. A million light years</label>
+        </div>
+      </div>
+      <div class="question" data-q="34">
+        <div class="q-text">Question 34: What does the professor NOT say about the movie 2001: A Space Odyssey?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q34" value="A"> A. It is exceptionally good.</label>
+          <label class="opt-label"><input type="radio" name="q34" value="B"> B. It portrays gravity correctly.</label>
+          <label class="opt-label"><input type="radio" name="q34" value="C"> C. It does not have faster-than-light travel.</label>
+          <label class="opt-label"><input type="radio" name="q34" value="D"> D. It does not depict sound in space.</label>
+        </div>
+      </div>
+      <div class="question" data-q="35">
+        <div class="q-text">Question 35: What can be inferred about science fiction?</div>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="q35" value="A"> A. Many people do not like watching science fiction.</label>
+          <label class="opt-label"><input type="radio" name="q35" value="B"> B. It is costly to make science fiction.</label>
+          <label class="opt-label"><input type="radio" name="q35" value="C"> C. Science fiction is not meant to teach us about science.</label>
+          <label class="opt-label"><input type="radio" name="q35" value="D"> D. The film Space Odyssey is a famous science fiction.</label>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="submitBtn" disabled>Nộp bài (vui lòng nghe hết bài trước)</button>
+  </form>
+
+  <div id="resultBox"></div>
+
+</div>
+
+<!-- Audio files: hidden, no native controls, cannot be seeked or downloaded through the page -->
+<audio id="audio1" preload="auto" src="audio/T1-PART1.mp3"></audio>
+<audio id="audio2" preload="auto" src="audio/T1-PART2.mp3"></audio>
+<audio id="audio3" preload="auto" src="audio/T1-PART3.mp3"></audio>
+
+<!-- Hidden iframe + form used to silently forward answers to the teacher's Google Form -->
+<iframe name="hidden_iframe" style="display:none"></iframe>
+<form id="gformSubmit"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSdovetETpmrPd2Fz2OekJrrtY4cFenMr4GqTV1D3T80kv2JXQ/formResponse"
+      method="POST" target="hidden_iframe" style="display:none">
+  <input name="entry.922942786"  id="gf_name">
+  <input name="entry.2112882999" id="gf_p1">
+  <input name="entry.1696151396" id="gf_p2a">
+  <input name="entry.121946383"  id="gf_p2b">
+  <input name="entry.268482431"  id="gf_p2c">
+  <input name="entry.1206699239" id="gf_p3a">
+  <input name="entry.380666972"  id="gf_p3b">
+  <input name="entry.40824353"   id="gf_p3c">
+</form>
+
+<script>
+(function(){
+  // ---- block right-click / drag to discourage saving the audio ----
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  var audios = [document.getElementById('audio1'), document.getElementById('audio2'), document.getElementById('audio3')];
+  var labels = ['Phần 1: Câu 1-8', 'Phần 2: Câu 9-20', 'Phần 3: Câu 21-35'];
+  var startBtn = document.getElementById('startBtn');
+  var submitBtn = document.getElementById('submitBtn');
+  var nowPlaying = document.getElementById('nowPlaying');
+  var progressFill = document.getElementById('progressFill');
+  var timerEl = document.getElementById('timer');
+  var audioWarning = document.getElementById('audioWarning');
+  var volumeSlider = document.getElementById('volume');
+
+  var currentIndex = -1;
+  var started = false;
+  var finishedListening = false;
+  var submitted = false;
+  var lastTimeByAudio = [0,0,0];
+  var timeLeft = 40*60;
+  var timerHandle = null;
+
+  audios.forEach(function(a){
+    a.volume = 1;
+    a.addEventListener('error', function(){ audioWarning.style.display='block'; });
+    a.setAttribute('tabindex','-1');
+  });
+
+  volumeSlider.addEventListener('input', function(){
+    audios.forEach(function(a){ a.volume = parseFloat(volumeSlider.value); });
+  });
+
+  function guardSeeking(a, idx){
+    a.addEventListener('timeupdate', function(){
+      if (this.currentTime - lastTimeByAudio[idx] <= 1.5) {
+        lastTimeByAudio[idx] = this.currentTime;
+      }
+      if (idx === currentIndex && this.duration) {
+        progressFill.style.width = Math.min(100, (this.currentTime/this.duration)*100) + '%';
+      }
+    });
+    a.addEventListener('seeking', function(){
+      if (Math.abs(this.currentTime - lastTimeByAudio[idx]) > 1.5) {
+        this.currentTime = lastTimeByAudio[idx];
+      }
+    });
+  }
+  audios.forEach(guardSeeking);
+
+  function playCurrent(){
+    nowPlaying.textContent = '🔊 Đang phát: ' + labels[currentIndex];
+    progressFill.style.width = '0%';
+    audios[currentIndex].play().catch(function(){ audioWarning.style.display='block'; });
+  }
+
+  audios.forEach(function(a, idx){
+    a.addEventListener('ended', function(){
+      if (idx !== currentIndex) return;
+      currentIndex++;
+      if (currentIndex < audios.length) {
+        playCurrent();
+      } else {
+        finishListening();
+      }
+    });
+  });
+
+  function finishListening(){
+    finishedListening = true;
+    nowPlaying.textContent = '✅ Đã phát xong toàn bộ phần nghe.';
+    progressFill.style.width = '100%';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Nộp bài';
+  }
+
+  function startListening(){
+    if (started) return;
+    started = true;
+    startBtn.disabled = true;
+    startBtn.textContent = 'Đang phát...';
+    currentIndex = 0;
+    playCurrent();
+    startTimer();
+  }
+
+  function startTimer(){
+    timerHandle = setInterval(function(){
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerHandle);
+        timeLeft = 0;
+        if (!submitted) submitTest();
+      }
+      var m = Math.floor(timeLeft/60), s = timeLeft%60;
+      timerEl.textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+      if (timeLeft <= 60) timerEl.classList.add('warn');
+    }, 1000);
+  }
+
+  startBtn.addEventListener('click', startListening);
+
+  // ---- answer key ----
+  var answerKey = {
+    1:'C',2:'B',3:'D',4:'A',5:'C',6:'C',7:'A',8:'B',
+    9:'C',10:'B',11:'A',12:'B',13:'B',14:'A',15:'C',16:'C',17:'C',18:'B',19:'B',20:'B',
+    21:'C',22:'B',23:'D',24:'B',25:'B',26:'C',27:'C',28:'C',29:'A',30:'D',
+    31:'C',32:'B',33:'A',34:'A',35:'C'
+  };
+
+  function getAnswer(q){
+    var el = document.querySelector('input[name="q'+q+'"]:checked');
+    return el ? el.value : '';
+  }
+
+  function groupString(from,to){
+    var parts = [];
+    for (var i=from;i<=to;i++){ parts.push(i+'-'+(getAnswer(i)||'_')); }
+    return parts.join(' ');
+  }
+
+  function lockForm(){
+    document.querySelectorAll('#testForm input').forEach(function(i){ i.disabled = true; });
+  }
+
+  submitBtn.addEventListener('click', function(){ submitTest(); });
+
+  function submitTest(){
+    if (submitted) return;
+    submitted = true;
+    if (timerHandle) clearInterval(timerHandle);
+    audios.forEach(function(a){ a.pause(); });
+
+    var fullName = document.getElementById('fullName').value.trim();
+
+    // ---- grade locally so the student sees their result immediately ----
+    var correctCount = 0;
+    var rows = '';
+    for (var q=1; q<=35; q++){
+      var given = getAnswer(q);
+      var correct = answerKey[q];
+      var ok = given === correct;
+      if (ok) correctCount++;
+
+      var qDiv = document.querySelector('.question[data-q="'+q+'"]');
+      if (qDiv) {
+        var givenLabel = given ? qDiv.querySelector('input[value="'+given+'"]').closest('.opt-label') : null;
+        var correctLabel = qDiv.querySelector('input[value="'+correct+'"]').closest('.opt-label');
+        if (givenLabel) givenLabel.classList.add(ok ? 'correct' : 'incorrect');
+        if (!ok) correctLabel.classList.add('correct');
+      }
+    }
+    lockForm();
+
+    var p1 = 0, p2 = 0, p3 = 0;
+    for (var i=1;i<=8;i++) if (getAnswer(i)===answerKey[i]) p1++;
+    for (var i=9;i<=20;i++) if (getAnswer(i)===answerKey[i]) p2++;
+    for (var i=21;i<=35;i++) if (getAnswer(i)===answerKey[i]) p3++;
+
+    var resultBox = document.getElementById('resultBox');
+    resultBox.style.display = 'block';
+    resultBox.innerHTML =
+      '<div class="score-summary">' +
+        '<div>Kết quả của: <b>' + (fullName || '(chưa nhập tên)') + '</b></div>' +
+        '<div class="big">' + correctCount + ' / 35</div>' +
+        '<div class="part-score">Part 1: ' + p1 + '/8 &nbsp;|&nbsp; Part 2: ' + p2 + '/12 &nbsp;|&nbsp; Part 3: ' + p3 + '/15</div>' +
+        '<div class="gform-status" id="gformStatus">Đang gửi kết quả về hệ thống...</div>' +
+      '</div>';
+    resultBox.scrollIntoView({behavior:'smooth'});
+
+    // ---- silently forward the raw answers to the teacher's Google Form ----
+    try {
+      document.getElementById('gf_name').value = fullName;
+      document.getElementById('gf_p1').value  = groupString(1,8);
+      document.getElementById('gf_p2a').value = groupString(9,12);
+      document.getElementById('gf_p2b').value = groupString(13,16);
+      document.getElementById('gf_p2c').value = groupString(17,20);
+      document.getElementById('gf_p3a').value = groupString(21,25);
+      document.getElementById('gf_p3b').value = groupString(26,30);
+      document.getElementById('gf_p3c').value = groupString(31,35);
+      document.getElementById('gformSubmit').submit();
+      setTimeout(function(){
+        var st = document.getElementById('gformStatus');
+        if (st) st.textContent = 'Đã gửi bài làm về Google Form. Nếu không thấy, hãy kiểm tra kết nối mạng.';
+      }, 1500);
+    } catch(e){
+      var st = document.getElementById('gformStatus');
+      if (st) st.textContent = 'Không thể gửi tự động về Google Form (có thể do mất kết nối mạng).';
+    }
+  }
+})();
+</script>
+</body>
+</html>
